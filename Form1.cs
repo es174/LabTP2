@@ -19,7 +19,7 @@ namespace LabTP2
             db.openConnection();
             DataTable dataTable = new DataTable();
             MySqlDataAdapter adapter = new MySqlDataAdapter();
-            MySqlCommand command = new MySqlCommand("SELECT id AS 'Id', firstname AS 'Имя', lastname AS 'Фамилия', createdAt AS 'Создан'  FROM `users`", db.getConnection());
+            MySqlCommand command = new MySqlCommand("SELECT id AS 'Id', firstname AS 'Имя', lastname AS 'Фамилия', createdAt AS 'Создан', men AS 'Муж', rating AS 'Рейтинг'  FROM `users`", db.getConnection());
             adapter.SelectCommand = command;
             adapter.Fill(dataTable);
             table.DataSource = dataTable;
