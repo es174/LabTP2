@@ -81,7 +81,7 @@ namespace LabTP2
 
             //todo sql
 
-            MySqlCommand command = new MySqlCommand("INSERT INTO `users` (`id`, `createdAt`, `firstname`, `lastname`) VALUES (NULL, CURRENT_TIMESTAMP, @fn, @ln)", db.getConnection());
+            MySqlCommand command = new MySqlCommand("INSERT INTO `users` (`id`, `createdAt`, `firstname`, `lastname`, `men`, `rating`) VALUES (NULL, CURRENT_TIMESTAMP, @fn, @ln,@men,@rating)", db.getConnection());
             command.Parameters.AddWithValue("ln", user.Lastname);
             command.Parameters.AddWithValue("fn", user.Firstname);
             if (user.Men)

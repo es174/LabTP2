@@ -13,6 +13,7 @@ namespace LabTP2
         public void openConnection()
         {   if(connection.State == System.Data.ConnectionState.Closed)
             connection.Open();
+            
         }
         public void closeConnection()
         {
