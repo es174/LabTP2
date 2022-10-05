@@ -7,10 +7,13 @@ namespace LabTP2
 {
     public partial class Form1 : Form
     {
-        static public int id = 0;
-        public int getId() { return id; }
+        private static int userId = 0;
+
         static DataGridView table;
         public DataGridView Table { get { return table; } }
+
+        public int UserId { get { return userId; } }
+
         public void UpdateTable()
         {
             this.Text = "Пользователи";
@@ -19,7 +22,7 @@ namespace LabTP2
             db.openConnection();
             DataTable dataTable = new DataTable();
             MySqlDataAdapter adapter = new MySqlDataAdapter();
-            MySqlCommand command = new MySqlCommand("SELECT id AS 'Id', firstname AS 'Имя', lastname AS 'Фамилия', createdAt AS 'Создан', men AS 'Муж', rating AS 'Рейтинг'  FROM `users`", db.getConnection());
+            MySqlCommand command = new MySqlCommand("CALL `selectUsers`();", db.getConnection());
             adapter.SelectCommand = command;
             adapter.Fill(dataTable);
             table.DataSource = dataTable;
@@ -54,12 +57,12 @@ namespace LabTP2
             if (this.Text == "Пользователи")
             {
 
-                Form2 form2 = new Form2(this, "Добавить пользователя");
+                Form2 form2 = new Form2(this, "Добавить пользователя", 0, 0);
                 form2.ShowDialog();
             }
             else if (this.Text == "Статьи")
             {
-                Form2 form2 = new Form2(this, "Добавить статью");
+                Form2 form2 = new Form2(this, "Добавить статью", 0, UserId);
                 form2.ShowDialog();
             }
 
@@ -70,12 +73,12 @@ namespace LabTP2
             if (this.Text == "Пользователи")
             {
 
-                Form2 form2 = new Form2(this, "Изменить пользователя");
+                Form2 form2 = new Form2(this, "Изменить пользователя", 0, 0);
                 form2.ShowDialog();
             }
             else if (this.Text == "Статьи")
             {
-                Form2 form2 = new Form2(this, "Изменить статью");
+                Form2 form2 = new Form2(this, "Изменить статью", 0, UserId);
                 form2.ShowDialog();
             }
 
@@ -86,7 +89,7 @@ namespace LabTP2
             this.Text = "Пользователи";
             ToolStripMenuItem tool = sender as ToolStripMenuItem;
             tool.Visible = false;
-            id = 0;
+            userId = 0;
             UpdateTable();
         }
 
@@ -94,9 +97,10 @@ namespace LabTP2
         {
             if (this.Text == "Пользователи")
             {
-                id = (int)dataGridView1.Rows[e.RowIndex].Cells[0].Value;
-                UpdateArticleTable(id);
+                userId = (int)dataGridView1.Rows[e.RowIndex].Cells[0].Value;
+                UpdateArticleTable(UserId);
                 назадToolStripMenuItem.Visible = true;
+                базаДанныхToolStripMenuItem.Visible = true;
             }
         }
 
@@ -112,7 +116,7 @@ namespace LabTP2
                 command.ExecuteNonQuery();
                 UpdateTable();
             }
-            else if (this.Text == "Статьи")
+            if (this.Text == "Статьи")
             {
                 MySqlCommand command = new MySqlCommand("DELETE FROM `article` WHERE id = @id", db.getConnection());
                 command.Parameters.AddWithValue("id", id);
@@ -120,41 +124,18 @@ namespace LabTP2
                 UpdateArticleTable(id);
             }
         }
-
-        private void dgrdResults_MouseClick(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                contextMenuStrip1.Show(Cursor.Position.X, Cursor.Position.Y);
-            }
-        }
         static int selectedBiodataId = 0;
-        private void dgrdResults_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                try
-                {
-                    dataGridView1.CurrentCell = dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex];
-                    dataGridView1.Rows[e.RowIndex].Selected = true;
-                    dataGridView1.Focus();
-                    selectedBiodataId = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells[0].Value);
-                }
-                catch (Exception)
-                { }
-            }
-        }
 
         private void изменитьToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             if (this.Text == "Пользователи")
             {
-                Form2 form2 = new Form2(this, "Изменить пользователя", selectedBiodataId);
+                Form2 form2 = new Form2(this, "Изменить пользователя", selectedBiodataId, 0);
                 form2.ShowDialog();
             }
             else if (this.Text == "Статьи")
             {
-                Form2 form2 = new Form2(this, "Изменить статью", selectedBiodataId);
+                Form2 form2 = new Form2(this, "Изменить статью", selectedBiodataId, UserId);
                 form2.ShowDialog();
             }
             selectedBiodataId = 0;
@@ -176,7 +157,7 @@ namespace LabTP2
                 MySqlCommand command = new MySqlCommand("DELETE FROM `article` WHERE id = @id", db.getConnection());
                 command.Parameters.AddWithValue("id", selectedBiodataId);
                 command.ExecuteNonQuery();
-                UpdateArticleTable(id);
+                UpdateArticleTable(UserId);
             }
             selectedBiodataId = 0;
         }
@@ -184,6 +165,25 @@ namespace LabTP2
         {
             (dataGridView1.DataSource as DataTable).DefaultView.RowFilter =
                 String.Format("Фамилия like '{0}%'", textBox1.Text);
+        }
+
+
+        private void dataGridView1_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                try
+                {
+                    contextMenuStrip1.Enabled = true;
+                    contextMenuStrip1.Show(Cursor.Position.X, Cursor.Position.Y);
+                    dataGridView1.CurrentCell = dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                    dataGridView1.Rows[e.RowIndex].Selected = true;
+                    dataGridView1.Focus();
+                    selectedBiodataId = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells[0].Value);
+                }
+                catch (Exception)
+                { }
+            }
         }
     }
 }

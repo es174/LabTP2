@@ -1,9 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LabTP2
 {
@@ -24,8 +20,9 @@ namespace LabTP2
         public string Firstname
         {
             get => firstname; set
-            {   if (String.IsNullOrWhiteSpace(value))
-                   throw new Exception();
+            {
+                if (String.IsNullOrWhiteSpace(value))
+                    throw new Exception();
                 firstname = value;
             }
         }
@@ -42,7 +39,8 @@ namespace LabTP2
         public double Rating
         {
             get => rating; set
-            {   if (value < 0 || value > 5)
+            {
+                if (value < 0 || value > 5)
                     throw new Exception();
                 rating = value;
             }
@@ -58,7 +56,8 @@ namespace LabTP2
         }
 
         public void UpdateUser()
-        {   DB db = new DB();
+        {
+            DB db = new DB();
             User user = this;
             db.openConnection();
             MySqlCommand command = new MySqlCommand("UPDATE `users` SET `firstname` = @fn, `lastname` = @ln, `men` = @men, `rating` = @rating WHERE `users`.`id` = @id", db.getConnection());
@@ -79,9 +78,7 @@ namespace LabTP2
             DB db = new DB();
             db.openConnection();
 
-            //todo sql
-
-            MySqlCommand command = new MySqlCommand("INSERT INTO `users` (`id`, `createdAt`, `firstname`, `lastname`) VALUES (NULL, CURRENT_TIMESTAMP, @fn, @ln)", db.getConnection());
+            MySqlCommand command = new MySqlCommand("INSERT INTO `users` (`id`, `createdAt`, `firstname`, `lastname`, `men`, `rating`) VALUES (NULL, CURRENT_TIMESTAMP, @fn, @ln,@men,@rating)", db.getConnection());
             command.Parameters.AddWithValue("ln", user.Lastname);
             command.Parameters.AddWithValue("fn", user.Firstname);
             if (user.Men)

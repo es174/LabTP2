@@ -1,9 +1,4 @@
 ﻿using MySql.Data.MySqlClient;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LabTP2
 {
@@ -11,8 +6,10 @@ namespace LabTP2
     {
         MySqlConnection connection = new MySqlConnection("server=localhost;port=3306;username=root;password=root;database=db_name");
         public void openConnection()
-        {   if(connection.State == System.Data.ConnectionState.Closed)
-            connection.Open();
+        {
+            if (connection.State == System.Data.ConnectionState.Closed)
+                connection.Open();
+
         }
         public void closeConnection()
         {
@@ -22,5 +19,6 @@ namespace LabTP2
 
         public MySqlConnection getConnection()
         { return connection; }
+
     }
 }
